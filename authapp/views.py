@@ -19,7 +19,7 @@ def verify(request, user_id, hash):
         user.is_active = True
         user.activation_key = None
         user.save()
-        auth.login(request, user)
+        auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(request, f'Активация пользователя {user} прошла успешно.')
         return HttpResponseRedirect(reverse('main:index'))
     raise Http404('Нет страницы верефикации')
