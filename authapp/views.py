@@ -4,10 +4,25 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, Http404
 
 from basketapp.models import Basket
 from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 from authapp.models import User
+from .utils import send_activate_mail
+
+
+def verify(request, user_id, hash):
+    user = User.objects.get(pk=user_id)
+    if user.activation_key == hash and user.is_activation_key_current():
+        user.is_active = True
+        user.activation_key = None
+        user.save()
+        auth.login(request, user)
+        messages.success(request, f'Активация пользователя {user} прошла успешно.')
+        return HttpResponseRedirect(reverse('main:index'))
+    raise Http404('Нет страницы верефикации')
+
 
 def login(request):
     if request.method == 'POST':
@@ -24,28 +39,50 @@ def login(request):
     context = {'form': form, 'head': 'авторизация'}
     return render(request, 'authapp/login.html', context)
 
-class UserCreateView(CreateView):
-    model = User
-    template_name = 'authapp/register.html'
-    form_class = UserRegisterForm
-    success_url = reverse_lazy('auth:login')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            send_activate_mail(user)
+            messages.success(request, 'Вы успешно зарегестрировались! Ссылка для активации профиля отправленна на почту.')
+            return HttpResponseRedirect(reverse('auth:login'))
+    else:
+        form = UserRegisterForm()
+    context = {'form': form}
+    return render(request, 'authapp/register.html', context)
+
+
+# class UserCreateView(CreateView):
+#     model = User
+#     template_name = 'authapp/register.html'
+#     form_class = UserRegisterForm
+#     success_url = reverse_lazy('auth:login')
+#
+#     def print(self):
+#         print(self.model)
+
+
+
+
 
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('main:index'))
 
-class UserProfileView(LoginRequiredMixin,UpdateView):
+
+class UserProfileView(LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'authapp/profile.html'
     form_class = UserProfileForm
+
     # login_url = 'main:products'
     # success_url = reverse_lazy('main:index')
 
     def get_success_url(self):
         self.success_url = reverse_lazy('auth:profile', args=[self.kwargs['pk']])
         return str(self.success_url)
-
-
 
 # @login_required
 # def profile(request):
@@ -61,5 +98,3 @@ class UserProfileView(LoginRequiredMixin,UpdateView):
 #                'baskets': Basket.objects.filter(user=request.user),
 #                }
 #     return render(request, 'authapp/profile.html', context)
-
-
