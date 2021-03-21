@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, Http404
 
 from basketapp.models import Basket
-from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm
+from authapp.forms import UserLoginForm, UserRegisterForm, UserProfileForm, ShopUserProfileEditForm
 from authapp.models import User
 from .utils import send_activate_mail
 
@@ -47,7 +47,8 @@ def register(request):
         if form.is_valid():
             user = form.save()
             send_activate_mail(user)
-            messages.success(request, 'Вы успешно зарегестрировались! Ссылка для активации профиля отправленна на почту.')
+            messages.success(request,
+                             'Вы успешно зарегестрировались! Ссылка для активации профиля отправленна на почту.')
             return HttpResponseRedirect(reverse('auth:login'))
     else:
         form = UserRegisterForm()
@@ -63,9 +64,6 @@ def register(request):
 #
 #     def print(self):
 #         print(self.model)
-
-
-
 
 
 def logout(request):
@@ -89,13 +87,23 @@ def logout(request):
 def profile(request, pk):
     if request.method == 'POST':
         form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
-        if form.is_valid():
+        profile_form = ShopUserProfileEditForm(data=request.POST, instance=request.user.shopuserprofile)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('auth:profile'))
+            profile_form.save()
+            context = {'head': 'GeekShop - Профиль',
+                       'form': form,
+                       'profile_form': profile_form,
+                       'baskets': Basket.objects.filter(user=request.user),
+                       }
+            return render(request, 'authapp/profile.html', context)
+            # return HttpResponseRedirect(reverse('auth:profile'))
     else:
         form = UserProfileForm(instance=request.user)
+        profile_form = ShopUserProfileEditForm(instance=request.user.shopuserprofile)
     context = {'head': 'GeekShop - Профиль',
                'form': form,
+               'profile_form': profile_form,
                'baskets': Basket.objects.filter(user=request.user),
                }
     return render(request, 'authapp/profile.html', context)
