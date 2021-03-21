@@ -2,7 +2,13 @@
 def user_status(request):
     user = request.user
     if user.is_authenticated:
-        status = 'авторизованн'
+        status = 'Пользователь авторизованн'
     else:
-        status = 'не авторизованн'
+        status = 'Пользователь не авторизованн'
     return {'status': status}
+
+
+
+
+
+

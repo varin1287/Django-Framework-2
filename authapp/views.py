@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.contrib import auth, messages
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,8 @@ from .utils import send_activate_mail
 
 
 def verify(request, user_id, hash):
-    user = User.objects.get(pk=user_id)
+    user = get_object_or_404(User, pk=user_id)
+    # user = User.objects.get(pk=user_id)
     if user.activation_key == hash and user.is_activation_key_current():
         user.is_active = True
         user.activation_key = None
@@ -72,29 +73,29 @@ def logout(request):
     return HttpResponseRedirect(reverse('main:index'))
 
 
-class UserProfileView(LoginRequiredMixin, UpdateView):
-    model = User
-    template_name = 'authapp/profile.html'
-    form_class = UserProfileForm
+# class UserProfileView(LoginRequiredMixin, UpdateView):
+#     model = User
+#     template_name = 'authapp/profile.html'
+#     form_class = UserProfileForm
+#
+#     # login_url = 'main:products'
+#     # success_url = reverse_lazy('main:index')
+#
+#     def get_success_url(self):
+#         self.success_url = reverse_lazy('auth:profile', args=[self.kwargs['pk']])
+#         return str(self.success_url)
 
-    # login_url = 'main:products'
-    # success_url = reverse_lazy('main:index')
-
-    def get_success_url(self):
-        self.success_url = reverse_lazy('auth:profile', args=[self.kwargs['pk']])
-        return str(self.success_url)
-
-# @login_required
-# def profile(request):
-#     if request.method == 'POST':
-#         form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('auth:profile'))
-#     else:
-#         form = UserProfileForm(instance=request.user)
-#     context = {'head': 'GeekShop - Профиль',
-#                'form': form,
-#                'baskets': Basket.objects.filter(user=request.user),
-#                }
-#     return render(request, 'authapp/profile.html', context)
+@login_required
+def profile(request, pk):
+    if request.method == 'POST':
+        form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('auth:profile'))
+    else:
+        form = UserProfileForm(instance=request.user)
+    context = {'head': 'GeekShop - Профиль',
+               'form': form,
+               'baskets': Basket.objects.filter(user=request.user),
+               }
+    return render(request, 'authapp/profile.html', context)

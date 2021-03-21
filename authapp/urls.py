@@ -9,7 +9,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     # path('register/', views.UserCreateView.as_view(), name='register'),
     path('logout/', views.logout, name='logout'),
-    path('profile/<int:pk>/', views.UserProfileView.as_view(), name='profile'),
+    path('profile/<int:pk>/', views.profile, name='profile'),
+    # path('profile/<int:pk>/', views.UserProfileView.as_view(), name='profile'),
     path('verify/<int:user_id>/<hash>/', views.verify, name='verify'),
 
 ]
