@@ -33,6 +33,7 @@
 
 {% block link %}
     <div class="small"><a href="{% url 'auth:register' %}">Нужен аккаунт? Зарегистрируйся!</a></div>
+    <div class="small"><a href="{% url 'social:begin' 'vk-oauth2' %}?next=/">Зайти через ВК</a></div>
 {% endblock %}
 
 
