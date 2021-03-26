@@ -46,13 +46,21 @@ class Order(models.Model):
         items = self.orderitems.select_related()
         return sum((list(map(lambda x: x.quantity * x.product.price, items))))
 
-    def delete(self):
+    def delete(self, using=None, keep_parents=False):
         for item in self.orderitems.select_related():
             item.product.quantity += item.quantity
             item.product.save()
 
         self.is_active = False
         self.save()
+
+
+class OrderItemQuerySet(models.QuerySet):
+    def delete(self, *args, **kwargs):
+        for object in self:
+            object.product.quantity += object.quantity
+            object.product.save()
+        super(OrderItemQuerySet, self).delete()
 
 
 class OrderItem(models.Model):
@@ -62,3 +70,17 @@ class OrderItem(models.Model):
 
     def get_product_cost(self):
         return self.product.price * self.quantity
+
+    object = OrderItemQuerySet.as_manager()
+
+    def save(self, *args, **kwargs):
+        quantity = self.product.quantity
+        if self.pk:
+            self.product.quantity -= self.quantity - OrderItem.objects.get(pk=self.pk).quantity
+        else:
+            self.product.quantity -= self.quantity
+        if self.product.quantity < 0:
+            self.product.quantity = quantity
+            return f'не дхватает товара {self.product.name}. На складе только {self.product.quantity}шт.'
+        self.product.save()
+        super(OrderItem, self).save(*args, **kwargs)

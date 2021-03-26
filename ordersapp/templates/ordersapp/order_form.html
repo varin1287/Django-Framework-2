@@ -1,7 +1,7 @@
 {% extends "ordersapp/base.html" %}
 {% load static %}
 {% block content %}
-{#    {% include 'ordersapp/includes/inc_order_summary.html' %}#}
+    {#    {% include 'ordersapp/includes/inc_order_summary.html' %}#}
     <div class="order_form">
         <form action="" method="post">
             {% csrf_token %}
@@ -23,7 +23,7 @@ formset_td">
                     {% endif %}
                     <tr class="formset_row">
                         {% for field in form.visible_fields %}
-                            <td class="{% cycle 'td1' 'td2' 'td3' %} order
+                            <td class="{% cycle 'td1' 'td2' 'td3' 'td4' %} order
 formset_td">
                                 {% if forloop.first %}
                                     {% for hidden in form.hidden_fields %}
@@ -31,7 +31,13 @@ formset_td">
                                     {% endfor %}
                                 {% endif %}
                                 {{ field.errors.as_ul }}
-                                {{ field }}
+                                {% if field.name != 'price' %}
+                                    {{ field }}
+                                {% elif field.value %}
+                                    <span class="orderitems-{{ forloop.parentloop.counter0 }}-price">
+                                        {{ field.value }}
+                                    </span>
+                                {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
@@ -40,7 +46,7 @@ formset_td">
             <button type="submit" value="сохранить" class="btn btn-default
 btn-round form-control last">сохранить
             </button>
-{#            {% include 'ordersapp/includes/inc_order_actions.html' %}#}
+            {#            {% include 'ordersapp/includes/inc_order_actions.html' %}#}
         </form>
     </div>
 {% endblock %}
