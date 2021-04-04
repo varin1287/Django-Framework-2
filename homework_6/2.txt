@@ -1,0 +1,52 @@
+функциональное тестирование
+
+параметры запуска
+siege -f ./homework_6/urls.txt -d0 -r26 -c1
+
+результат
+** SIEGE 4.0.4
+** Preparing 1 concurrent users for battle.
+The server is now under siege...
+Transactions:                    210 hits
+Availability:                  97.67 %
+Elapsed time:                   7.17 secs
+Data transferred:              26.26 MB
+Response time:                  0.03 secs
+Transaction rate:              29.29 trans/sec
+Throughput:                     3.66 MB/sec
+Concurrency:                    0.99
+Successful transactions:         209
+Failed transactions:               5
+Longest transaction:            0.96
+Shortest transaction:           0.00
+
+исправление
+@method_decorator(login_required())
+@login_required
+
+этот исправить не смог
+order_forming_complete - type object 'Order' has no attribute 'SENT_TO_PROCEED'
+
+ещё одна ошибка
+/project/venv/lib/python3.8/site-packages/django/core/handlers/exception.py
+in inner response = get_response(request)
+project/venv/lib/python3.8/site-packages/django/core/handlers/base.py
+in _get_response raise ValueError(
+ValueError: The view ordersapp.views.get_product_price didn't return an HttpResponse object. It returned None instead.
+
+новый результат
+** SIEGE 4.0.4
+** Preparing 1 concurrent users for battle.
+The server is now under siege...
+Transactions:                    240 hits
+Availability:                  99.17 %
+Elapsed time:                   7.94 secs
+Data transferred:              27.98 MB
+Response time:                  0.03 secs
+Transaction rate:              30.23 trans/sec
+Throughput:                     3.52 MB/sec
+Concurrency:                    1.00
+Successful transactions:         239
+Failed transactions:               2
+Longest transaction:            0.89
+Shortest transaction:           0.00

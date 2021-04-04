@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'adminapp',
     'ordersapp',
     'social_django',
-
+    'django_extensions',
 
 ]
 

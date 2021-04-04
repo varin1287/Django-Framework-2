@@ -1,8 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.db import transaction
 from django.forms import inlineformset_factory
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from basketapp.models import Basket
@@ -18,6 +20,10 @@ from mainapp.models import Product
 class OrderList(ListView):
     model = Order
 
+    @method_decorator(login_required())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
 
@@ -26,6 +32,10 @@ class OrderItemsCreate(CreateView):
     model = Order
     fields = []
     success_url = reverse_lazy('ordersapp:orders_list')
+
+    @method_decorator(login_required())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -107,6 +117,10 @@ class OrderDelete(DeleteView):
     model = Order
     success_url = reverse_lazy('ordersapp:orders_list')
 
+    @method_decorator(login_required())
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
 
 class OrderRead(DetailView):
     model = Order
@@ -115,6 +129,8 @@ class OrderRead(DetailView):
         context = super(OrderRead, self).get_context_data(**kwargs)
         context['title'] = 'заказ/просмотр'
         return context
+
+
 
 
 def order_forming_complete(request, pk):

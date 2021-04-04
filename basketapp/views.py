@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.contrib import messages
 
+
 from mainapp.models import Product
 from basketapp.models import Basket
 
@@ -26,7 +27,7 @@ def basket_add(request, product_id=None):
             messages.success(request, error_massage)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
+@login_required
 def basket_remove(request, id):
     basket = Basket.objects.get(id=id)
     basket.delete()
