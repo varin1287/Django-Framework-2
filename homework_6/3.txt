@@ -1,0 +1,22 @@
+siege -f ./homework_6/urls_3.txt -d0 -r26 -c5
+
+Адрес                       Transactions:   Elapsed time,с      Transaction rate    Response time
+/                           1170            8.28                141.30              0.04 secs
+/products/                  1950            36.20               53.87               0.09 secs
+products/1   (категория)    1820            32.77               55.54               0.09 secs
+/order/                     1300            14.17               91.74               0.05 secs
+/order/update/24/           1170            65.93               17.75               0.28 secs
+/order/read/24/             1170            21.31               54.90               0.09 secs
+
+адрес /
+                        -r50 -c50           -r25 -c100          -r17 -c150          -r12 -c200
+Transactions            22500 hits          22352 hits          22451 hits          20558 hits
+Availability            100.00 %            99.91 %             99.74 %             99.41 %
+Elapsed time,с          166.78 secs         254.14 secs         271.23 secs         231.10 secs
+Response time           0.35 secs           0.49 secs           0.53 secs           0.62 secs
+Transaction rate        134.91 trans/sec    87.95 trans/sec     82.77 trans/sec     88.96 trans/sec
+Throughput              5.50 MB/sec         3.59 MB/sec         3.38 MB/sec         3.63 MB/sec
+Concurrency:            47.86               43.07               43.86               54.85
+Successful transactions 22500               22352               22451               20558
+Failed transactions     0                   20                  59                  122
+Longest transaction     15.82               118.88              107.88              63.60

@@ -2,4 +2,10 @@ from django.contrib import admin
 
 from authapp.models import User
 
-admin.site.register(User)
+
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'id')
+    list_display_links = ('username',)
+
+
+admin.site.register(User, UserAdmin)
