@@ -4,3 +4,4 @@ django-debug-toolbar==3.2
 social-auth-app-django==3.4.0
 requests==2.25.1
 django-extensions
+django-redis

@@ -13,7 +13,7 @@ def index(request):
 
 
 def products(request, category_id=None):
-    menu_names = ProductCategory.objects.all()
+    menu_names = ProductCategory.get_all()
     page = request.GET.get('page', 1)
 
     if not category_id:

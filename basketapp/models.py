@@ -1,3 +1,4 @@
+from functools import cached_property
 from django.db import models
 
 from authapp.models import User
@@ -24,12 +25,16 @@ class Basket(models.Model):
     def sum(self):
         return self.quantity * self.product.price
 
+    @cached_property
+    def basket_for_user(self):
+        return Basket.objects.filter(user=self.user)
+
     def total_quantity(self):
-        baskets = Basket.objects.filter(user=self.user)
+        baskets = self.basket_for_user
         return sum(basket.quantity for basket in baskets)
 
     def total_sum(self):
-        baskets = Basket.objects.filter(user=self.user)
+        baskets = self.basket_for_user
         return sum(basket.sum() for basket in baskets)
 
     objects = BasketQuerySet.as_manager()
@@ -45,5 +50,3 @@ class Basket(models.Model):
             return f'товар {self.product.name} закончился'
         self.product.save()
         super(Basket, self).save(*args, **kwargs)
-
-
