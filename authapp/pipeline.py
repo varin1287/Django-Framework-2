@@ -30,7 +30,10 @@ def save_user_profile(backend, user, response, *args, **kwargs):
     print(data)
 
     if data['sex']:
-        user.shopuserprofile.gender = ShopUserProfile.MALE if data['sex'] == 2 else ShopUserProfile.FEMALE
+        if data['sex'] == 2:
+            user.shopuserprofile.gender = ShopUserProfile.MALE
+        elif data['sex'] == 1:
+            user.shopuserprofile.gender = ShopUserProfile.FEMALE
 
     if data['about']:
         user.shopuserprofile.about_me = data['about']
@@ -41,7 +44,7 @@ def save_user_profile(backend, user, response, *args, **kwargs):
         age = timezone.now().date().year - bdate.year
         user.age = age
         if age < 18:
-        # if age < 108:
+            # if age < 108:
             user.delete()
             raise AuthForbidden('social_core.backends.vk.VKOAuth2')
 

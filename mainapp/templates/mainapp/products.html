@@ -60,6 +60,19 @@
                     </a>
                 </div>
 
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert"
+                             style="margin-top: 50px; ">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+
                 <div class="row">
                     {% for card in cards.object_list %}
                         <div class="col-lg-4 col-md-6 mb-4">
@@ -75,6 +88,10 @@
                                     </h4>
                                     <h5>{{ card.price }}</h5>
                                     <p class="card-text">{{ card.short_description }}</p>
+                                </div>
+
+                                <div class="card-body">
+                                    <p class="card-text">кол-во товара на складе: {{ card.quantity }}</p>
                                 </div>
 
                                 <div class="card-footer text-center">
